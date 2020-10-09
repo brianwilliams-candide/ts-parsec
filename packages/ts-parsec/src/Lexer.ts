@@ -108,7 +108,8 @@ class LexerImpl<T> implements Lexer<T> {
         let result: TokenImpl<T> | undefined;
         for (const [keep, regexp, kind] of this.rules) {
             regexp.lastIndex = 0;
-            if (regexp.test(subString)) {
+            const match = regexp.exec(subString);
+            if (match) {
                 const text = subString.substr(0, regexp.lastIndex);
                 let rowEnd = rowBegin;
                 let columnEnd = columnBegin;
@@ -120,7 +121,7 @@ class LexerImpl<T> implements Lexer<T> {
                     }
                 }
 
-                const newResult = new TokenImpl<T>(this, input, kind, text, { index: indexStart, rowBegin, columnBegin, rowEnd, columnEnd }, keep);
+                const newResult = new TokenImpl<T>(this, input, kind, match[0], { index: indexStart, rowBegin, columnBegin, rowEnd, columnEnd }, keep);
                 if (result === undefined || result.text.length < newResult.text.length) {
                     result = newResult;
                 }
